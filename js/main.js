@@ -208,25 +208,23 @@ async function loadProducts() {
 function renderProducts() {
     const productList = document.getElementById('product-list');
     productList.innerHTML = state.products.map(product => `
-        <div onclick="openProductModal(${product.id})" class="bg-white rounded-[32px] p-4 shadow-sm border border-primary-50 group hover:shadow-xl transition-all cursor-pointer">
-            <div class="relative h-48 mb-4 overflow-hidden rounded-[24px]">
-                <img src="${product.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-primary-900 shadow-sm">
-                    $${product.price}+
+        <div onclick="openProductModal(${product.id})" class="product-card group relative bg-white p-5 rounded-4xl cursor-pointer">
+            <div class="relative h-56 mb-5 overflow-hidden rounded-3xl bg-primary-100">
+                <img src="${product.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                <div class="absolute top-4 left-4 glass px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-accent stroke-accent"></i>
+                    <span class="text-[11px] font-black tracking-wider text-primary-900">4.8</span>
+                </div>
+                <div class="absolute bottom-4 right-4 bg-primary-900 text-white w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
                 </div>
             </div>
             <div class="px-2">
-                <h3 class="text-xl font-black text-primary-900 mb-1">${product.name}</h3>
-                <p class="text-primary-900 text-sm line-clamp-1">${product.description}</p>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-1 text-primary-900">
-                        <i data-lucide="star" class="w-4 h-4 fill-primary-300 stroke-none"></i>
-                        <span class="text-xs font-bold">4.8</span>
-                    </div>
-                    <button class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center hover:bg-primary-900 transition-colors">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                    </button>
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-black text-primary-900 leading-tight">${product.name}</h3>
+                    <span class="text-lg font-black text-accent">$${product.price}</span>
                 </div>
+                <p class="text-primary-500 text-xs font-semibold uppercase tracking-widest leading-relaxed line-clamp-2">${product.description}</p>
             </div>
         </div>
     `).join('');
@@ -345,9 +343,10 @@ function removeFromCart(index) {
 async function processCheckout() {
     if (state.cart.length === 0) return;
 
-    if (sb && state.user) {
-        const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+    const total = state.cart.reduce((sum, item) => sum + item.price, 0);
+    const checkoutCart = [...state.cart]; // Copy cart to render receipt
 
+    if (sb && state.user) {
         const { data: order, error: orderError } = await sb
             .from('orders')
             .insert([{
@@ -358,7 +357,7 @@ async function processCheckout() {
             .select();
 
         if (!orderError) {
-            const orderItems = state.cart.map(item => ({
+            const orderItems = checkoutCart.map(item => ({
                 order_id: order[0].id,
                 product_name: item.name,
                 size: item.size,
@@ -370,10 +369,49 @@ async function processCheckout() {
         }
     }
 
+    // Prepare Receipt before navigating
+    renderSuccessReceipt(checkoutCart, total);
+
     // Success flow anyway for demo
     state.cart = [];
     updateCartCount();
     navigateTo('success');
+}
+
+function renderSuccessReceipt(cart, total) {
+    const container = document.getElementById('order-receipt');
+    if (!container) return;
+
+    const dateStr = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    container.innerHTML = `
+        <div class="receipt-header">
+            <h4 class="font-black text-primary-900 text-lg uppercase tracking-tight">Drinkit! Coffee</h4>
+            <p class="text-[10px] text-primary-400 font-bold mt-1">${dateStr}</p>
+        </div>
+        <div class="receipt-body">
+            ${cart.map(item => `
+                <div class="receipt-item">
+                    <span class="font-bold text-primary-900">${item.name} (${item.size})</span>
+                    <span class="font-black text-primary-900">$${item.price.toFixed(2)}</span>
+                </div>
+            `).join('')}
+            <div class="receipt-divider"></div>
+            <div class="receipt-total">
+                <span class="text-primary-600">TOTAL</span>
+                <span class="text-primary-900">$${total.toFixed(2)}</span>
+            </div>
+        </div>
+        <div class="mt-6 pt-4 border-t border-primary-50 text-center">
+            <p class="text-[9px] font-black text-primary-300 uppercase tracking-[0.2em]">Thank you for your visit!</p>
+        </div>
+    `;
 }
 
 async function loadOrderHistory() {

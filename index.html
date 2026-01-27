@@ -15,34 +15,29 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#FAF7F2',
-                            100: '#F5EBE0',
-                            200: '#E5D3B3',
-                            300: '#DAB88B',
-                            400: '#A67B5B',
-                            500: '#8B5E3C',
-                            600: '#4B3621',
-                            700: '#3D2B1F',
-                            800: '#2C1810',
-                            900: '#000000',
+                            50: '#FDFCFB',
+                            100: '#F8F7F4',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            600: '#4B5563',
+                            700: '#374151',
+                            800: '#1F2937',
+                            900: '#120F0D',
                         },
-                        coffee: {
-                            50: '#FAF7F2',
-                            100: '#F5EBE0',
-                            200: '#E5D3B3',
-                            300: '#DAB88B',
-                            400: '#A67B5B',
-                            500: '#8B5E3C',
-                            600: '#6F4E37',
-                            700: '#4B3621',
-                            800: '#3D2B1F',
-                            900: '#2C1810',
-                        },
-                        cream: '#F5F5DC',
+                        accent: {
+                            DEFAULT: '#C6A664',
+                            dark: '#A38952',
+                        }
                     },
-                    animation: {
-                        'float': 'float 3s ease-in-out infinite',
-                        'steam': 'steam 3s ease-in-out infinite',
+                    borderRadius: {
+                        '3xl': '24px',
+                        '4xl': '32px',
+                    },
+                    boxShadow: {
+                        'premium': '0 20px 50px -12px rgba(18, 15, 13, 0.08)',
+                        'soft': '0 8px 30px rgba(0, 0, 0, 0.04)',
                     }
                 }
             }
@@ -57,34 +52,36 @@
 
         <!-- Splash Screen -->
         <section id="screen-splash"
-            class="screen flex flex-col items-center justify-center h-full px-8 text-center animate-fadeIn">
-            <div class="relative mb-8">
-                <div
-                    class="w-40 h-40 bg-primary-600 rounded-full flex items-center justify-center shadow-2xl relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-primary-800 to-transparent opacity-50"></div>
-                    <i data-lucide="coffee"
-                        class="w-20 h-20 text-white relative z-10 group-hover:scale-110 transition-transform duration-500"></i>
+            class="screen flex flex-col items-center justify-between h-full pt-20 pb-12 px-10 text-center animate-in">
+            <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="relative mb-12 animate-pulse-soft">
+                    <div
+                        class="w-48 h-48 bg-primary-900 rounded-full flex items-center justify-center shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+                        <i data-lucide="coffee" class="w-24 h-24 text-accent"></i>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    </div>
+                    <!-- Steam Elements -->
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 flex space-x-3">
+                        <div class="w-1.5 h-16 bg-accent/20 rounded-full blur-md animate-steam"></div>
+                        <div class="w-1.5 h-24 bg-accent/30 rounded-full blur-md animate-steam"
+                            style="animation-delay: 0.5s;"></div>
+                        <div class="w-1.5 h-12 bg-accent/20 rounded-full blur-md animate-steam"
+                            style="animation-delay: 1.2s;"></div>
+                    </div>
                 </div>
-                <!-- Steam Elements -->
-                <div class="absolute -top-6 left-1/2 -translate-x-1/2 flex space-x-2">
-                    <div class="w-2 h-12 bg-primary-200 rounded-full blur-sm animate-steam opacity-40"></div>
-                    <div class="w-2 h-16 bg-primary-100 rounded-full blur-sm animate-steam opacity-30"
-                        style="animation-delay: 0.5s;"></div>
-                    <div class="w-2 h-10 bg-primary-200 rounded-full blur-sm animate-steam opacity-35"
-                        style="animation-delay: 1s;"></div>
-                </div>
+                <h1 class="text-7xl font-black text-primary-900 mb-2 tracking-tighter">Drinkit.</h1>
+                <p class="text-primary-400 text-sm font-bold uppercase tracking-[0.4em]">The New Way to Brew</p>
             </div>
-            <h1 class="text-6xl font-black text-primary-900 mb-4 tracking-tighter">Drinkit!</h1>
-            <p class="text-primary-900 text-lg mb-12 font-medium">Elevate Your Day, One Sip at a Time.</p>
+
             <button onclick="navigateTo('auth')"
-                class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-5 rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
-                Get Started
-                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                class="w-full btn-primary font-black py-6 rounded-3xl shadow-premium flex items-center justify-center gap-3 text-lg">
+                Enter Roastery
+                <i data-lucide="arrow-right" class="w-6 h-6"></i>
             </button>
         </section>
 
         <!-- Auth Screen -->
-        <section id="screen-auth" class="screen hidden h-full px-8 py-12 animate-fadeIn">
+        <section id="screen-auth" class="screen hidden h-full px-8 py-12 animate-in">
             <button onclick="navigateTo('splash')"
                 class="mb-10 text-primary-600 hover:text-primary-900 flex items-center font-semibold group">
                 <i data-lucide="arrow-left" class="w-6 h-6 mr-2 group-hover:-translate-x-1 transition-transform"></i>
@@ -153,19 +150,18 @@
         </section>
 
         <!-- Home Screen -->
-        <section id="screen-home" class="screen hidden h-full flex flex-col animate-fadeIn">
+        <section id="screen-home" class="screen hidden h-full flex flex-col animate-in">
             <!-- Sticky Header -->
-            <header
-                class="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-5 border-b border-primary-50 flex items-center justify-between">
+            <header class="bg-white/90 backdrop-blur-xl sticky top-0 z-30 px-8 py-6 flex items-center justify-between">
                 <div>
-                    <i data-lucide="coffee" class="w-8 h-8 text-primary-600 mb-1"></i>
-                    <h1 class="text-2xl font-black text-primary-900">Drinkit!</h1>
+                    <h1 class="text-3xl font-black text-primary-900 tracking-tighter">Drinkit!</h1>
+                    <p class="text-[10px] font-bold text-accent uppercase tracking-[0.2em] mt-0.5">Premium Roastery</p>
                 </div>
                 <button onclick="navigateTo('cart')"
-                    class="relative p-3 bg-primary-50 rounded-2xl text-primary-700 group transition-all hover:bg-primary-100">
-                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    class="relative w-12 h-12 bg-primary-100 rounded-2xl text-primary-900 flex items-center justify-center transition-all hover:bg-primary-200">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                     <span id="cart-count"
-                        class="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-black rounded-full px-1.5 py-0.5 border-2 border-white">0</span>
+                        class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[9px] font-black rounded-full px-1.5 py-0.5 border-2 border-white min-w-[20px]">0</span>
                 </button>
             </header>
 
@@ -193,8 +189,7 @@
         </section>
 
         <!-- Product Modal (Hidden by default) -->
-        <div id="product-modal"
-            class="hidden fixed inset-0 z-50 flex items-end justify-center px-4 pb-4 animate-fadeIn">
+        <div id="product-modal" class="hidden fixed inset-0 z-50 flex items-end justify-center px-4 pb-4 animate-in">
             <div class="absolute inset-0 bg-primary-900/60 backdrop-blur-sm" onclick="closeProductModal()"></div>
             <div
                 class="relative bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl transition-all translate-y-0">
@@ -248,7 +243,7 @@
         </div>
 
         <!-- Cart Screen -->
-        <section id="screen-cart" class="screen hidden h-full flex flex-col animate-fadeIn">
+        <section id="screen-cart" class="screen hidden h-full flex flex-col animate-in">
             <header class="px-6 py-5 border-b border-primary-50 flex items-center justify-between">
                 <button onclick="navigateTo('home')" class="p-2 -ml-2 text-primary-700">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i>
@@ -274,7 +269,7 @@
         </section>
 
         <!-- History Screen -->
-        <section id="screen-history" class="screen hidden h-full flex flex-col animate-fadeIn">
+        <section id="screen-history" class="screen hidden h-full flex flex-col animate-in">
             <header class="px-6 py-5 border-b border-primary-50 bg-white">
                 <h1 class="text-xl font-black text-primary-900">Order History</h1>
             </header>
@@ -284,127 +279,141 @@
         </section>
 
         <!-- Profile Screen -->
-        <section id="screen-profile" class="screen hidden h-full flex flex-col animate-fadeIn">
+        <section id="screen-profile" class="screen hidden h-full flex flex-col animate-in">
             <header class="px-6 py-5 border-b border-primary-50 bg-white">
                 <h1 class="text-xl font-black text-primary-900">My Profile</h1>
             </header>
             <div class="flex-1 overflow-y-auto px-6 py-8 pb-32">
                 <!-- User Profile Header -->
-                <div class="flex flex-col items-center mb-10">
+                <div class="flex flex-col items-center mb-10 animate-in">
                     <div
-                        class="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-4 border-4 border-white shadow-xl">
-                        <i data-lucide="user" class="w-12 h-12 text-primary-600"></i>
+                        class="w-32 h-32 bg-white rounded-full flex items-center justify-center mb-6 shadow-premium relative">
+                        <i data-lucide="user" class="w-16 h-16 text-primary-900"></i>
+                        <div
+                            class="absolute bottom-1 right-1 w-8 h-8 bg-accent rounded-full border-4 border-white flex items-center justify-center">
+                            <i data-lucide="star" class="w-4 h-4 text-white fill-current"></i>
+                        </div>
                     </div>
-                    <h2 id="profile-email" class="text-xl font-black text-primary-900">Member</h2>
-                    <p class="text-primary-600 text-sm font-bold uppercase tracking-widest">Coffee Enthusiast</p>
+                    <h2 id="profile-email" class="text-2xl font-black text-primary-900 tracking-tight">Member</h2>
+                    <p class="text-accent font-black text-[10px] uppercase tracking-[0.3em] mt-1">Diamond Member</p>
                 </div>
 
                 <!-- Rewards / Loyalty Card -->
-                <div
-                    class="bg-primary-600 rounded-[32px] p-6 text-white mb-8 shadow-xl shadow-primary-200 relative overflow-hidden">
+                <div class="bg-primary-900 rounded-4xl p-8 text-white mb-10 shadow-premium relative overflow-hidden group animate-in"
+                    style="animation-delay: 0.1s;">
                     <div class="relative z-10">
-                        <h3 class="text-sm font-bold opacity-80 mb-1">Loyalty Points</h3>
-                        <p class="text-4xl font-black mb-6">1,240 <span class="text-sm opacity-60">pts</span></p>
-                        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden mb-2">
-                            <div class="bg-white h-full w-[80%] rounded-full"></div>
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-1">Your
+                                    Balance</h3>
+                                <p class="text-4xl font-black italic">1,240 <span
+                                        class="text-xs opacity-40 not-italic">pts</span></p>
+                            </div>
+                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center">
+                                <i data-lucide="zap" class="w-6 h-6 text-accent"></i>
+                            </div>
                         </div>
-                        <p class="text-[10px] font-bold uppercase opacity-80">260 points until your next free brew!</p>
+                        <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
+                            <div class="bg-accent h-full w-[80%] rounded-full shadow-[0_0_15px_rgba(198,166,100,0.5)]">
+                            </div>
+                        </div>
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40">260 points until your next
+                            luxury brew</p>
                     </div>
-                    <i data-lucide="award"
-                        class="absolute right-[-10px] bottom-[-10px] w-32 h-32 opacity-10 rotate-12"></i>
+                    <i data-lucide="layout-grid"
+                        class="absolute right-[-20px] top-[-20px] w-48 h-48 opacity-5 rotate-12 group-hover:rotate-45 transition-transform duration-700"></i>
                 </div>
 
                 <!-- Profile Menu Options -->
-                <div class="space-y-3">
-                    <div
-                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
-                        <div class="flex items-center gap-4">
+                <div class="space-y-4 animate-in" style="animation-delay: 0.2s;">
+                    <button
+                        class="w-full bg-white p-6 rounded-3xl flex items-center justify-between group hover:shadow-soft transition-all">
+                        <div class="flex items-center gap-5">
                             <div
-                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
-                                <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-900">
+                                <i data-lucide="credit-card" class="w-6 h-6"></i>
                             </div>
-                            <span class="font-bold text-primary-900">Payment Methods</span>
+                            <span class="font-black text-primary-900 tracking-tight">Payment Methods</span>
                         </div>
                         <i data-lucide="chevron-right"
-                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
-                    </div>
-                    <div
-                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
-                        <div class="flex items-center gap-4">
+                            class="w-5 h-5 text-primary-300 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+
+                    <button
+                        class="w-full bg-white p-6 rounded-3xl flex items-center justify-between group hover:shadow-soft transition-all">
+                        <div class="flex items-center gap-5">
                             <div
-                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
-                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                                class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-900">
+                                <i data-lucide="map-pin" class="w-6 h-6"></i>
                             </div>
-                            <span class="font-bold text-primary-900">My Addresses</span>
+                            <span class="font-black text-primary-900 tracking-tight">Delivery Addresses</span>
                         </div>
                         <i data-lucide="chevron-right"
-                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
-                    </div>
-                    <div
-                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
-                                <i data-lucide="settings" class="w-5 h-5"></i>
-                            </div>
-                            <span class="font-bold text-primary-900">Account Settings</span>
-                        </div>
-                        <i data-lucide="chevron-right"
-                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
-                    </div>
+                            class="w-5 h-5 text-primary-300 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+
+                    <button onclick="handleLogout()"
+                        class="w-full bg-primary-50 p-6 rounded-3xl flex items-center justify-center gap-3 text-red-500 font-black tracking-tight hover:bg-red-50 transition-all mt-8 border-2 border-dashed border-red-100">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        Sign Out
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Order Success Screen -->
         <section id="screen-success"
-            class="screen hidden h-full flex flex-col items-center justify-center px-8 text-center animate-fadeIn">
-            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                <i data-lucide="check" class="w-12 h-12 text-green-600"></i>
+            class="screen hidden h-full flex flex-col items-center py-10 px-6 text-center animate-in bg-primary-50">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
             </div>
-            <h2 class="text-4xl font-black text-primary-900 mb-2">Order Confirmed!</h2>
-            <p class="text-primary-900 mb-10">Your caffeine is on its way. Relax and wait for the magic to happen.</p>
-            <button onclick="navigateTo('home')"
-                class="w-full bg-primary-600 text-white font-bold py-5 rounded-2xl shadow-xl">
-                Back to Menu
-            </button>
+            <h2 class="text-3xl font-black text-primary-900 mb-1">Cheers!</h2>
+            <p class="text-primary-600 text-sm mb-8">Your order is being prepared with love.</p>
+
+            <!-- Dynamic Receipt -->
+            <div id="order-receipt" class="receipt mb-10 w-full animate-in" style="animation-delay: 0.2s;">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div class="w-full space-y-3 px-2">
+                <button onclick="window.print()"
+                    class="w-full bg-white border-2 border-primary-600 text-primary-600 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-50 transition-all">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Save Receipt
+                </button>
+                <button onclick="navigateTo('home')"
+                    class="w-full bg-primary-600 text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-primary-700 transition-all">
+                    Back to Menu
+                </button>
+            </div>
         </section>
 
         <!-- Global Bottom Navigation -->
         <nav id="bottom-nav"
-            class="hidden fixed bottom-1 left-4 right-4 max-w-sm mx-auto bg-white/90 backdrop-blur-xl border border-primary-50 px-4 py-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full border-primary-100">
-            <button onclick="navigateTo('home')"
-                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+            class="hidden fixed bottom-6 left-6 right-6 max-w-sm mx-auto glass px-6 py-4 justify-around items-center z-40 rounded-[32px] shadow-premium">
+            <button onclick="navigateTo('home')" class="nav-item flex flex-col items-center p-2 group"
                 data-screen="home">
-                <i data-lucide="layout-grid" class="w-5 h-5 mb-1"></i>
-                <span class="text-[8px] font-bold uppercase tracking-tighter">Menu</span>
+                <i data-lucide="layout-grid" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">Menu</span>
             </button>
-            <button onclick="navigateTo('history')"
-                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+            <button onclick="navigateTo('history')" class="nav-item flex flex-col items-center p-2 group"
                 data-screen="history">
-                <i data-lucide="history" class="w-5 h-5 mb-1"></i>
-                <span class="text-[8px] font-bold uppercase tracking-tighter">History</span>
+                <i data-lucide="history" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">History</span>
             </button>
-            <button onclick="navigateTo('cart')"
-                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+            <button onclick="navigateTo('cart')" class="nav-item flex flex-col items-center p-2 group relative"
                 data-screen="cart">
                 <div class="relative">
-                    <i data-lucide="shopping-bag" class="w-5 h-5 mb-1"></i>
+                    <i data-lucide="shopping-bag" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
                     <span id="cart-count-nav"
-                        class="absolute -top-1 -right-1 bg-primary-600 text-white text-[8px] font-black rounded-full px-1 py-0.5 border border-white">0</span>
+                        class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[8px] font-black rounded-full px-1 py-0.5 border-2 border-white min-w-[18px]">0</span>
                 </div>
-                <span class="text-[8px] font-bold uppercase tracking-tighter">Basket</span>
+                <span class="text-[8px] font-black uppercase tracking-widest">Basket</span>
             </button>
-            <button onclick="navigateTo('profile')"
-                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+            <button onclick="navigateTo('profile')" class="nav-item flex flex-col items-center p-2 group"
                 data-screen="profile">
-                <i data-lucide="user" class="w-5 h-5 mb-1"></i>
-                <span class="text-[8px] font-bold uppercase tracking-tighter">Profile</span>
-            </button>
-            <button onclick="handleLogout()"
-                class="flex flex-col items-center p-2 rounded-2xl text-red-400 transition-all duration-300 active:scale-95">
-                <i data-lucide="log-out" class="w-5 h-5 mb-1"></i>
-                <span class="text-[8px] font-bold uppercase tracking-tighter">Exit</span>
+                <i data-lucide="user" class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">Account</span>
             </button>
         </nav>
 
