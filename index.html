@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drinkit! - Premium Coffee Ordering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.16.29/font/lucide.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#FAF7F2',
+                            100: '#F5EBE0',
+                            200: '#E5D3B3',
+                            300: '#DAB88B',
+                            400: '#A67B5B',
+                            500: '#8B5E3C',
+                            600: '#4B3621',
+                            700: '#3D2B1F',
+                            800: '#2C1810',
+                            900: '#000000',
+                        },
+                        coffee: {
+                            50: '#FAF7F2',
+                            100: '#F5EBE0',
+                            200: '#E5D3B3',
+                            300: '#DAB88B',
+                            400: '#A67B5B',
+                            500: '#8B5E3C',
+                            600: '#6F4E37',
+                            700: '#4B3621',
+                            800: '#3D2B1F',
+                            900: '#2C1810',
+                        },
+                        cream: '#F5F5DC',
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'steam': 'steam 3s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-primary-50 h-full font-sans text-primary-900">
+
+    <!-- App Container -->
+    <div id="app" class="max-w-md mx-auto min-h-screen relative bg-white shadow-2xl overflow-hidden flex flex-col">
+
+        <!-- Splash Screen -->
+        <section id="screen-splash"
+            class="screen flex flex-col items-center justify-center h-full px-8 text-center animate-fadeIn">
+            <div class="relative mb-8">
+                <div
+                    class="w-40 h-40 bg-primary-600 rounded-full flex items-center justify-center shadow-2xl relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary-800 to-transparent opacity-50"></div>
+                    <i data-lucide="coffee"
+                        class="w-20 h-20 text-white relative z-10 group-hover:scale-110 transition-transform duration-500"></i>
+                </div>
+                <!-- Steam Elements -->
+                <div class="absolute -top-6 left-1/2 -translate-x-1/2 flex space-x-2">
+                    <div class="w-2 h-12 bg-primary-200 rounded-full blur-sm animate-steam opacity-40"></div>
+                    <div class="w-2 h-16 bg-primary-100 rounded-full blur-sm animate-steam opacity-30"
+                        style="animation-delay: 0.5s;"></div>
+                    <div class="w-2 h-10 bg-primary-200 rounded-full blur-sm animate-steam opacity-35"
+                        style="animation-delay: 1s;"></div>
+                </div>
+            </div>
+            <h1 class="text-6xl font-black text-primary-900 mb-4 tracking-tighter">Drinkit!</h1>
+            <p class="text-primary-900 text-lg mb-12 font-medium">Elevate Your Day, One Sip at a Time.</p>
+            <button onclick="navigateTo('auth')"
+                class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-5 rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
+                Get Started
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </section>
+
+        <!-- Auth Screen -->
+        <section id="screen-auth" class="screen hidden h-full px-8 py-12 animate-fadeIn">
+            <button onclick="navigateTo('splash')"
+                class="mb-10 text-primary-600 hover:text-primary-900 flex items-center font-semibold group">
+                <i data-lucide="arrow-left" class="w-6 h-6 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+                Back
+            </button>
+            <div class="text-center mb-10">
+                <h2 id="auth-title" class="text-4xl font-bold text-primary-900 mb-2">Welcome Back</h2>
+                <p id="auth-subtitle" class="text-primary-900">Sign in to continue your coffee journey</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" class="space-y-5">
+                <div>
+                    <label class="block text-primary-700 font-bold mb-2 ml-1">Email Address</label>
+                    <input type="email" id="login-email" required
+                        class="w-full px-5 py-4 bg-primary-50 border-2 border-primary-100 rounded-2xl focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                        placeholder="name@example.com">
+                </div>
+                <div>
+                    <label class="block text-primary-700 font-bold mb-2 ml-1">Password</label>
+                    <input type="password" id="login-password" required
+                        class="w-full px-5 py-4 bg-primary-50 border-2 border-primary-100 rounded-2xl focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit"
+                    class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-5 rounded-2xl shadow-lg transition-all hover:shadow-primary-200/50 mt-4">
+                    Sign In
+                </button>
+                <p class="text-center text-primary-900 mt-6">
+                    New to Drinkit!?
+                    <button type="button" onclick="toggleAuthMode()"
+                        class="text-primary-900 font-bold hover:underline">Create Account</button>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="form-signup" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-primary-700 font-bold mb-2 ml-1">Full Name</label>
+                    <input type="text" id="signup-name" required
+                        class="w-full px-5 py-4 bg-primary-50 border-2 border-primary-100 rounded-2xl focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                        placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="block text-primary-700 font-bold mb-2 ml-1">Email Address</label>
+                    <input type="email" id="signup-email" required
+                        class="w-full px-5 py-4 bg-primary-50 border-2 border-primary-100 rounded-2xl focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                        placeholder="name@example.com">
+                </div>
+                <div>
+                    <label class="block text-primary-700 font-bold mb-2 ml-1">Password</label>
+                    <input type="password" id="signup-password" required
+                        class="w-full px-5 py-4 bg-primary-50 border-2 border-primary-100 rounded-2xl focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit"
+                    class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-5 rounded-2xl shadow-lg transition-all mt-4">
+                    Create Account
+                </button>
+                <p class="text-center text-primary-900 mt-6">
+                    Already have an account?
+                    <button type="button" onclick="toggleAuthMode()"
+                        class="text-primary-900 font-bold hover:underline">Sign In</button>
+                </p>
+            </form>
+        </section>
+
+        <!-- Home Screen -->
+        <section id="screen-home" class="screen hidden h-full flex flex-col animate-fadeIn">
+            <!-- Sticky Header -->
+            <header
+                class="bg-white/80 backdrop-blur-md sticky top-0 z-30 px-6 py-5 border-b border-primary-50 flex items-center justify-between">
+                <div>
+                    <i data-lucide="coffee" class="w-8 h-8 text-primary-600 mb-1"></i>
+                    <h1 class="text-2xl font-black text-primary-900">Drinkit!</h1>
+                </div>
+                <button onclick="navigateTo('cart')"
+                    class="relative p-3 bg-primary-50 rounded-2xl text-primary-700 group transition-all hover:bg-primary-100">
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    <span id="cart-count"
+                        class="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] font-black rounded-full px-1.5 py-0.5 border-2 border-white">0</span>
+                </button>
+            </header>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto px-6 py-6 pb-32">
+
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-black text-primary-900">Special for you</h2>
+                    <button onclick="loadProducts()" class="text-primary-600 text-sm font-bold hover:underline">View
+                        all</button>
+                </div>
+
+                <!-- Menu Items Grid -->
+                <div id="product-list" class="grid grid-cols-1 gap-6">
+                    <!-- Products will be loaded here -->
+                    <div class="animate-pulse space-y-4">
+                        <div class="h-48 bg-primary-100 rounded-3xl"></div>
+                        <div class="h-6 bg-primary-50 w-3/4 rounded-full"></div>
+                        <div class="h-4 bg-primary-50 w-1/2 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partial Bottom Nav (Injecting only Home and History) -->
+        </section>
+
+        <!-- Product Modal (Hidden by default) -->
+        <div id="product-modal"
+            class="hidden fixed inset-0 z-50 flex items-end justify-center px-4 pb-4 animate-fadeIn">
+            <div class="absolute inset-0 bg-primary-900/60 backdrop-blur-sm" onclick="closeProductModal()"></div>
+            <div
+                class="relative bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl transition-all translate-y-0">
+                <div class="relative h-64">
+                    <img id="modal-image" src="" alt="" class="w-full h-full object-cover">
+                    <button onclick="closeProductModal()"
+                        class="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/40">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div class="p-8">
+                    <h3 id="modal-name" class="text-2xl font-black text-primary-900 mb-2"></h3>
+                    <p id="modal-description" class="text-primary-900 text-sm mb-6"></p>
+
+                    <div class="mb-8">
+                        <p class="text-sm font-bold text-primary-900 mb-3">Choose Size</p>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button onclick="selectSize('Tiny', 5)"
+                                class="size-option group border-2 border-primary-100 p-2 rounded-2xl flex flex-col items-center hover:border-primary-500 hover:bg-primary-50 transition-all">
+                                <span
+                                    class="text-[10px] font-bold text-primary-400 group-hover:text-primary-700">TINY</span>
+                                <span class="text-sm font-black text-primary-900">$5</span>
+                            </button>
+                            <button onclick="selectSize('Small', 10)"
+                                class="size-option group border-2 border-primary-100 p-2 rounded-2xl flex flex-col items-center hover:border-primary-500 hover:bg-primary-50 transition-all">
+                                <span
+                                    class="text-[10px] font-bold text-primary-400 group-hover:text-primary-700">SMALL</span>
+                                <span class="text-sm font-black text-primary-900">$10</span>
+                            </button>
+                            <button onclick="selectSize('Medium', 15)"
+                                class="size-option group border-2 border-primary-100 p-2 rounded-2xl flex flex-col items-center hover:border-primary-500 hover:bg-primary-50 transition-all">
+                                <span
+                                    class="text-[10px] font-bold text-primary-400 group-hover:text-primary-700">MED</span>
+                                <span class="text-sm font-black text-primary-900">$15</span>
+                            </button>
+                            <button onclick="selectSize('Large', 20)"
+                                class="size-option group border-2 border-primary-100 p-2 rounded-2xl flex flex-col items-center hover:border-primary-500 hover:bg-primary-50 transition-all">
+                                <span
+                                    class="text-[10px] font-bold text-primary-400 group-hover:text-primary-700">LARGE</span>
+                                <span class="text-sm font-black text-primary-900">$20</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="add-to-cart-btn"
+                        class="w-full bg-primary-700 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-primary-800 active:scale-95 transition-all">
+                        Add to Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Screen -->
+        <section id="screen-cart" class="screen hidden h-full flex flex-col animate-fadeIn">
+            <header class="px-6 py-5 border-b border-primary-50 flex items-center justify-between">
+                <button onclick="navigateTo('home')" class="p-2 -ml-2 text-primary-700">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                </button>
+                <h1 class="text-xl font-black text-primary-900">Your Basket</h1>
+                <div class="w-10"></div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto px-6 py-6" id="cart-items-container">
+                <!-- Cart items will be injected here -->
+            </div>
+
+            <div id="cart-footer" class="p-8 border-t border-primary-50 bg-white mb-20">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-primary-900 font-bold">Total price</span>
+                    <span id="cart-total" class="text-3xl font-black text-primary-900">$0.00</span>
+                </div>
+                <button onclick="processCheckout()" id="checkout-btn"
+                    class="w-full bg-primary-900 text-white font-black py-5 rounded-2xl shadow-2xl hover:bg-black active:scale-[0.98] transition-all disabled:opacity-50">
+                    Complete Order
+                </button>
+            </div>
+        </section>
+
+        <!-- History Screen -->
+        <section id="screen-history" class="screen hidden h-full flex flex-col animate-fadeIn">
+            <header class="px-6 py-5 border-b border-primary-50 bg-white">
+                <h1 class="text-xl font-black text-primary-900">Order History</h1>
+            </header>
+            <div id="history-container" class="flex-1 overflow-y-auto px-6 py-6 pb-32 space-y-4">
+                <!-- History items will be injected here -->
+            </div>
+        </section>
+
+        <!-- Profile Screen -->
+        <section id="screen-profile" class="screen hidden h-full flex flex-col animate-fadeIn">
+            <header class="px-6 py-5 border-b border-primary-50 bg-white">
+                <h1 class="text-xl font-black text-primary-900">My Profile</h1>
+            </header>
+            <div class="flex-1 overflow-y-auto px-6 py-8 pb-32">
+                <!-- User Profile Header -->
+                <div class="flex flex-col items-center mb-10">
+                    <div
+                        class="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-4 border-4 border-white shadow-xl">
+                        <i data-lucide="user" class="w-12 h-12 text-primary-600"></i>
+                    </div>
+                    <h2 id="profile-email" class="text-xl font-black text-primary-900">Member</h2>
+                    <p class="text-primary-600 text-sm font-bold uppercase tracking-widest">Coffee Enthusiast</p>
+                </div>
+
+                <!-- Rewards / Loyalty Card -->
+                <div
+                    class="bg-primary-600 rounded-[32px] p-6 text-white mb-8 shadow-xl shadow-primary-200 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h3 class="text-sm font-bold opacity-80 mb-1">Loyalty Points</h3>
+                        <p class="text-4xl font-black mb-6">1,240 <span class="text-sm opacity-60">pts</span></p>
+                        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden mb-2">
+                            <div class="bg-white h-full w-[80%] rounded-full"></div>
+                        </div>
+                        <p class="text-[10px] font-bold uppercase opacity-80">260 points until your next free brew!</p>
+                    </div>
+                    <i data-lucide="award"
+                        class="absolute right-[-10px] bottom-[-10px] w-32 h-32 opacity-10 rotate-12"></i>
+                </div>
+
+                <!-- Profile Menu Options -->
+                <div class="space-y-3">
+                    <div
+                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
+                                <i data-lucide="credit-card" class="w-5 h-5"></i>
+                            </div>
+                            <span class="font-bold text-primary-900">Payment Methods</span>
+                        </div>
+                        <i data-lucide="chevron-right"
+                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
+                    </div>
+                    <div
+                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <span class="font-bold text-primary-900">My Addresses</span>
+                        </div>
+                        <i data-lucide="chevron-right"
+                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
+                    </div>
+                    <div
+                        class="bg-white border border-primary-50 p-5 rounded-3xl flex items-center justify-between group hover:border-primary-600 transition-all cursor-pointer">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                            </div>
+                            <span class="font-bold text-primary-900">Account Settings</span>
+                        </div>
+                        <i data-lucide="chevron-right"
+                            class="w-5 h-5 text-primary-200 group-hover:text-primary-600 transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Success Screen -->
+        <section id="screen-success"
+            class="screen hidden h-full flex flex-col items-center justify-center px-8 text-center animate-fadeIn">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                <i data-lucide="check" class="w-12 h-12 text-green-600"></i>
+            </div>
+            <h2 class="text-4xl font-black text-primary-900 mb-2">Order Confirmed!</h2>
+            <p class="text-primary-900 mb-10">Your caffeine is on its way. Relax and wait for the magic to happen.</p>
+            <button onclick="navigateTo('home')"
+                class="w-full bg-primary-600 text-white font-bold py-5 rounded-2xl shadow-xl">
+                Back to Menu
+            </button>
+        </section>
+
+        <!-- Global Bottom Navigation -->
+        <nav id="bottom-nav"
+            class="hidden fixed bottom-1 left-4 right-4 max-w-sm mx-auto bg-white/90 backdrop-blur-xl border border-primary-50 px-4 py-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full border-primary-100">
+            <button onclick="navigateTo('home')"
+                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+                data-screen="home">
+                <i data-lucide="layout-grid" class="w-5 h-5 mb-1"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Menu</span>
+            </button>
+            <button onclick="navigateTo('history')"
+                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+                data-screen="history">
+                <i data-lucide="history" class="w-5 h-5 mb-1"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">History</span>
+            </button>
+            <button onclick="navigateTo('cart')"
+                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+                data-screen="cart">
+                <div class="relative">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 mb-1"></i>
+                    <span id="cart-count-nav"
+                        class="absolute -top-1 -right-1 bg-primary-600 text-white text-[8px] font-black rounded-full px-1 py-0.5 border border-white">0</span>
+                </div>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Basket</span>
+            </button>
+            <button onclick="navigateTo('profile')"
+                class="nav-item flex flex-col items-center p-2 rounded-2xl transition-all duration-300 active:scale-90"
+                data-screen="profile">
+                <i data-lucide="user" class="w-5 h-5 mb-1"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Profile</span>
+            </button>
+            <button onclick="handleLogout()"
+                class="flex flex-col items-center p-2 rounded-2xl text-red-400 transition-all duration-300 active:scale-95">
+                <i data-lucide="log-out" class="w-5 h-5 mb-1"></i>
+                <span class="text-[8px] font-bold uppercase tracking-tighter">Exit</span>
+            </button>
+        </nav>
+
+
+        <!-- Floating Notifications -->
+        <div id="toast-container"
+            class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[280px] pointer-events-none"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
