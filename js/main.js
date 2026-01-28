@@ -421,6 +421,9 @@ async function processCheckout() {
     // Increase Loyalty Points
     state.loyaltyPoints += 5;
 
+    // Send automatic email receipt (simulated)
+    sendEmailReceipt(checkoutCart, total, newOrderId);
+
     // Success flow anyway for demo
     state.cart = [];
     updateCartCount();
@@ -626,6 +629,37 @@ function showToast(message) {
         toast.style.transition = 'all 0.3s ease-in';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+function downloadReceipt() {
+    const element = document.getElementById('order-receipt');
+    const opt = {
+        margin: 1,
+        filename: 'Drinkit_Receipt.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+    showToast("Downloading receipt...");
+}
+
+async function sendEmailReceipt(cart, total, orderId) {
+    if (!state.user || state.user.id === 'mock-id') {
+        console.log("Guest checkout: Skipping email send.");
+        return;
+    }
+
+    const email = state.user.email;
+    const displayId = `DK-${(orderId * 739).toString(36).toUpperCase()}`;
+
+    // Simulation of an API call to a service like Resend or EmailJS
+    console.log(`[EMAIL SEND] To: ${email}, Order: ${displayId}, Total: $${total}`);
+
+    // We use a slight delay to simulate network latency
+    setTimeout(() => {
+        showToast(`Receipt sent to ${email}`);
+    }, 1500);
 }
 
 // Initial Screen override for dev
