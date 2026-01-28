@@ -24,7 +24,9 @@ let state = {
     cart: [],
     currentProduct: null,
     selectedSize: { name: 'Small', price: 10 },
-    currentScreen: 'splash'
+    currentScreen: 'splash',
+    loyaltyPoints: 0,
+    walletBalance: 100.00
 };
 
 // --- Initial Demo Data (Fallback) ---
@@ -144,23 +146,27 @@ window.navigateTo = function (screenId) {
 
     // Update Bottom Nav visibility
     const bottomNav = document.getElementById('bottom-nav');
-    if (['home', 'history', 'cart', 'profile'].includes(screenId)) {
+    if (['home', 'history', 'cart', 'profile', 'wallet'].includes(screenId)) {
         bottomNav.classList.remove('hidden');
-        bottomNav.classList.add('flex');
+        bottomNav.classList.add('flex'); // Ensure flex is added for layout
+        // Update active state in nav
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('data-screen') === screenId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
     } else {
-        bottomNav.classList.remove('flex');
+        bottomNav.classList.remove('flex'); // Ensure flex is removed
         bottomNav.classList.add('hidden');
     }
 
-    // Special renders
+    // Special renders / Refresh data if needed
     if (screenId === 'cart') renderCart();
     if (screenId === 'history') loadOrderHistory();
-
-    // Update Nav Activity UI
-    document.querySelectorAll('.nav-item').forEach(item => {
-        if (item.getAttribute('data-screen') === screenId) item.classList.add('active');
-        else item.classList.remove('active');
-    });
+    if (screenId === 'profile') updateLoyaltySystem();
+    if (screenId === 'wallet') renderWallet();
 
     // Refresh icons
     lucide.createIcons();
@@ -346,6 +352,15 @@ async function processCheckout() {
     const total = state.cart.reduce((sum, item) => sum + item.price, 0);
     const checkoutCart = [...state.cart]; // Copy cart to render receipt
 
+    if (state.walletBalance < total) {
+        showToast("Low balance! Add funds to your wallet.");
+        navigateTo('wallet');
+        return;
+    }
+
+    // Deduct from wallet
+    state.walletBalance -= total;
+
     if (sb && state.user) {
         const { data: order, error: orderError } = await sb
             .from('orders')
@@ -371,6 +386,9 @@ async function processCheckout() {
 
     // Prepare Receipt before navigating
     renderSuccessReceipt(checkoutCart, total);
+
+    // Increase Loyalty Points
+    state.loyaltyPoints += 5;
 
     // Success flow anyway for demo
     state.cart = [];
@@ -409,6 +427,10 @@ function renderSuccessReceipt(cart, total) {
             </div>
         </div>
         <div class="mt-6 pt-4 border-t border-primary-50 text-center">
+            <div class="mb-4 inline-flex items-center gap-2 bg-accent/10 px-3 py-1 rounded-full">
+                <i data-lucide="zap" class="w-3 h-3 text-accent fill-accent"></i>
+                <span class="text-[9px] font-black text-accent uppercase tracking-wider">+5 Points Earned</span>
+            </div>
             <p class="text-[9px] font-black text-primary-300 uppercase tracking-[0.2em]">Thank you for your visit!</p>
         </div>
     `;
@@ -476,6 +498,82 @@ async function loadOrderHistory() {
                 </div>
             `;
         }).join('');
+    }
+}
+
+// --- Wallet & Loyalty Logic ---
+function updateLoyaltySystem() {
+    const pointsTotal = document.getElementById('loyalty-points-total');
+    const progress = document.getElementById('loyalty-progress');
+    const nextTierText = document.getElementById('loyalty-next-tier');
+    const tierName = document.getElementById('profile-tier');
+
+    if (!pointsTotal || !progress) return;
+
+    const points = state.loyaltyPoints;
+    pointsTotal.innerText = points;
+
+    let currentTier = "Coffee Enthusiast";
+    let nextTier = "Up-and-coming";
+    let threshold = 250;
+
+    if (points >= 1000) {
+        currentTier = "Legendary Member";
+        nextTier = "Max Tier Reached";
+        threshold = points; // 100%
+    } else if (points >= 500) {
+        currentTier = "Regular Member";
+        nextTier = "Legendary";
+        threshold = 1000;
+    } else if (points >= 250) {
+        currentTier = "Up-and-coming Member";
+        nextTier = "Regular";
+        threshold = 500;
+    }
+
+    tierName.innerText = currentTier;
+    const percentage = Math.min((points / threshold) * 100, 100);
+    progress.style.width = `${percentage}%`;
+
+    if (points < 1000) {
+        const remaining = threshold - points;
+        nextTierText.innerText = `${remaining} points until ${nextTier} tier`;
+    } else {
+        nextTierText.innerText = "You are a Coffee Legend!";
+    }
+}
+
+function renderWallet() {
+    const balanceText = document.getElementById('wallet-balance-total');
+    if (balanceText) {
+        balanceText.innerText = state.walletBalance.toFixed(2);
+    }
+}
+
+function fundWallet() {
+    state.walletBalance += 100;
+    renderWallet();
+    showToast("Wallet funded with $100.00!");
+
+    // Add transaction to history
+    const container = document.getElementById('wallet-transactions');
+    if (container) {
+        const transaction = document.createElement('div');
+        transaction.className = "flex items-center justify-between p-4 bg-white rounded-3xl animate-in";
+        transaction.innerHTML = `
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                    <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <p class="font-black text-primary-900 text-sm">Wallet Funded</p>
+                    <p class="text-[10px] text-primary-400 font-bold uppercase">Just Now</p>
+                </div>
+            </div>
+            <p class="font-black text-green-600">+$100.00</p>
+        `;
+        container.insertBefore(transaction, container.firstChild);
+        lucide.createIcons();
     }
 }
 

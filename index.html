@@ -265,8 +265,9 @@
                     <span id="cart-total" class="text-3xl font-black text-primary-900">$0.00</span>
                 </div>
                 <button onclick="processCheckout()" id="checkout-btn"
-                    class="w-full bg-primary-900 text-white font-black py-5 rounded-2xl shadow-2xl hover:bg-black active:scale-[0.98] transition-all disabled:opacity-50">
-                    Complete Order
+                    class="w-full bg-primary-900 text-white font-black py-5 rounded-2xl shadow-2xl hover:bg-black active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    <i data-lucide="wallet" class="w-5 h-5 opacity-60"></i>
+                    Pay with Wallet
                 </button>
             </div>
         </section>
@@ -298,7 +299,8 @@
                         </div>
                     </div>
                     <h2 id="profile-email" class="text-2xl font-black text-primary-900 tracking-tight">Member</h2>
-                    <p class="text-accent font-black text-[10px] uppercase tracking-[0.3em] mt-1">Diamond Member</p>
+                    <p id="profile-tier" class="text-accent font-black text-[10px] uppercase tracking-[0.3em] mt-1">
+                        Diamond Member</p>
                 </div>
 
                 <!-- Rewards / Loyalty Card -->
@@ -309,7 +311,7 @@
                             <div>
                                 <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-1">Your
                                     Balance</h3>
-                                <p class="text-4xl font-black italic">1,240 <span
+                                <p class="text-4xl font-black italic"><span id="loyalty-points-total">0</span> <span
                                         class="text-xs opacity-40 not-italic">pts</span></p>
                             </div>
                             <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center">
@@ -317,11 +319,12 @@
                             </div>
                         </div>
                         <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
-                            <div class="bg-accent h-full w-[80%] rounded-full shadow-[0_0_15px_rgba(198,166,100,0.5)]">
+                            <div id="loyalty-progress"
+                                class="bg-accent h-full w-[0%] rounded-full shadow-[0_0_15px_rgba(198,166,100,0.5)] transition-all duration-1000">
                             </div>
                         </div>
-                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40">260 points until your next
-                            luxury brew</p>
+                        <p id="loyalty-next-tier" class="text-[9px] font-black uppercase tracking-widest opacity-40">
+                            Earn points with every order</p>
                     </div>
                     <i data-lucide="layout-grid"
                         class="absolute right-[-20px] top-[-20px] w-48 h-48 opacity-5 rotate-12 group-hover:rotate-45 transition-transform duration-700"></i>
@@ -329,14 +332,14 @@
 
                 <!-- Profile Menu Options -->
                 <div class="space-y-4 animate-in" style="animation-delay: 0.2s;">
-                    <button
+                    <button onclick="navigateTo('wallet')"
                         class="w-full bg-white p-6 rounded-3xl flex items-center justify-between group hover:shadow-soft transition-all">
                         <div class="flex items-center gap-5">
                             <div
                                 class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-900">
-                                <i data-lucide="credit-card" class="w-6 h-6"></i>
+                                <i data-lucide="wallet" class="w-6 h-6"></i>
                             </div>
-                            <span class="font-black text-primary-900 tracking-tight">Payment Methods</span>
+                            <span class="font-black text-primary-900 tracking-tight">Wallet</span>
                         </div>
                         <i data-lucide="chevron-right"
                             class="w-5 h-5 text-primary-300 group-hover:translate-x-1 transition-all"></i>
@@ -360,6 +363,59 @@
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                         Sign Out
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wallet Screen -->
+        <section id="screen-wallet" class="screen hidden h-full flex flex-col animate-in">
+            <header class="px-8 py-6 flex items-center gap-4">
+                <button onclick="navigateTo('profile')"
+                    class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center text-primary-900">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h1 class="text-2xl font-black text-primary-900 tracking-tight">My Wallet</h1>
+            </header>
+
+            <div class="px-8 py-4">
+                <!-- Balance Card -->
+                <div class="bg-accent rounded-4xl p-8 text-white mb-10 shadow-premium relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-2">Available Balance
+                        </h3>
+                        <p class="text-5xl font-black italic mb-8">$<span id="wallet-balance-total">0.00</span></p>
+
+                        <div class="flex gap-3">
+                            <button onclick="fundWallet()"
+                                class="flex-1 bg-white text-accent font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 hover:bg-primary-50 transition-all">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                                Fund Wallet
+                            </button>
+                        </div>
+                    </div>
+                    <i data-lucide="credit-card"
+                        class="absolute right-[-20px] bottom-[-20px] w-40 h-40 opacity-10 -rotate-12"></i>
+                </div>
+
+                <h3 class="text-xs font-black uppercase text-primary-400 tracking-widest mb-6">Recent Transactions</h3>
+                <div id="wallet-transactions" class="space-y-4">
+                    <!-- Demo Transactions -->
+                    <div class="flex items-center justify-between p-4 bg-white rounded-3xl">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                                <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-primary-900 text-sm">Wallet Funded</p>
+                                <p class="text-[10px] text-primary-400 font-bold uppercase">Today, 10:30 AM</p>
+                            </div>
+                        </div>
+                        <p class="font-black text-green-600">+$100.00</p>
+                    </div>
+                    <div class="text-center py-10">
+                        <p class="text-primary-400 text-sm font-bold">No other transactions yet</p>
+                    </div>
                 </div>
             </div>
         </section>
