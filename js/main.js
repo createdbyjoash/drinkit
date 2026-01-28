@@ -15,6 +15,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let sb = null;
 if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
     sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("Supabase Client Initialized");
+} else {
+    console.warn("Supabase not configured. Running in Demo Mode.");
 }
 
 // --- App State ---
@@ -88,7 +91,10 @@ async function handleSignup(e) {
     const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name } }
+        options: {
+            data: { full_name: name },
+            emailRedirectTo: window.location.origin
+        }
     });
 
     if (error) {
@@ -365,26 +371,36 @@ async function processCheckout() {
     // Deduct from wallet
     state.walletBalance -= total;
 
-    if (sb && state.user) {
-        const { data: order, error: orderError } = await sb
-            .from('orders')
-            .insert([{
-                user_id: state.user.id,
-                total_price: total,
-                status: 'Preparing'
-            }])
-            .select();
+    if (sb && state.user && state.user.id !== 'mock-id') {
+        try {
+            const { data: order, error: orderError } = await sb
+                .from('orders')
+                .insert([{
+                    user_id: state.user.id,
+                    total_price: total,
+                    status: 'Preparing'
+                }])
+                .select();
 
-        if (!orderError) {
-            const orderItems = checkoutCart.map(item => ({
-                order_id: order[0].id,
-                product_name: item.name,
-                size: item.size,
-                quantity: item.quantity,
-                price: item.price
-            }));
+            if (orderError) {
+                console.error("Order Insert Error:", orderError);
+                showToast(`Order failed: ${orderError.message}`);
+            } else if (order && order.length > 0) {
+                const orderItems = checkoutCart.map(item => ({
+                    order_id: order[0].id,
+                    product_name: item.name,
+                    size: item.size,
+                    quantity: item.quantity,
+                    price: item.price
+                }));
 
-            await sb.from('order_items').insert(orderItems);
+                const { error: itemsError } = await sb.from('order_items').insert(orderItems);
+                if (itemsError) {
+                    console.error("Order Items Insert Error:", itemsError);
+                }
+            }
+        } catch (err) {
+            console.error("Checkout Exception:", err);
         }
     }
 
