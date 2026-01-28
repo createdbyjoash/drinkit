@@ -669,9 +669,9 @@ async function sendEmailReceipt(cart, total, orderId) {
 
     // 2. Integration with EmailJS
     // To make this work, replace the strings below with your real IDs from the EmailJS Dashboard
-    const SERVICE_ID = "YOUR_SERVICE_ID";
-    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-    const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+    const SERVICE_ID = "service_v4jt8p7";
+    const TEMPLATE_ID = "template_4q30c08";
+    const PUBLIC_KEY = "rP_3CdF1uDVpixZIX";
 
     if (SERVICE_ID !== "YOUR_SERVICE_ID") {
         emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
