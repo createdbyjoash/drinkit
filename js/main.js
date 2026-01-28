@@ -647,6 +647,7 @@ function downloadReceipt() {
 async function sendEmailReceipt(cart, total, orderId) {
     if (!state.user || state.user.id === 'mock-id') {
         console.log("Guest checkout: Skipping email send.");
+        showToast("Guest order: Receipt not sent to email.");
         return;
     }
 
@@ -655,7 +656,10 @@ async function sendEmailReceipt(cart, total, orderId) {
     const displayId = `DK-${(orderId * 739).toString(36).toUpperCase()}`;
     const itemsList = cart.map(item => `- ${item.name} (${item.size}): $${item.price.toFixed(2)}`).join('\n');
 
-    // 1. Prepare Template Parameters (Mapping to EmailJS placeholders)
+    const SERVICE_ID = "service_v4jt8p7";
+    const TEMPLATE_ID = "template_4q30c08";
+    const PUBLIC_KEY = "rP_3CdF1uDVpixZIX";
+
     const templateParams = {
         to_name: userName,
         to_email: email,
@@ -665,26 +669,12 @@ async function sendEmailReceipt(cart, total, orderId) {
         date: new Date().toLocaleDateString()
     };
 
-    console.log("[EMAIL PREP] Sending with params:", templateParams);
-
-    // 2. Integration with EmailJS
-    // To make this work, replace the strings below with your real IDs from the EmailJS Dashboard
-    const SERVICE_ID = "service_v4jt8p7";
-    const TEMPLATE_ID = "template_4q30c08";
-    const PUBLIC_KEY = "rP_3CdF1uDVpixZIX";
-
-    if (SERVICE_ID !== "YOUR_SERVICE_ID") {
-        emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
-            .then(() => {
-                showToast(`Receipt sent to ${email}`);
-            }, (error) => {
-                console.error("EmailJS Error:", error);
-            });
-    } else {
-        // Fallback simulation for demo
-        setTimeout(() => {
-            showToast(`Receipt sent (Demo Mode) to ${email}`);
-        }, 1500);
+    try {
+        await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+        showToast(`Receipt sent to ${email}`);
+    } catch (error) {
+        console.error("EmailJS Error:", error);
+        showToast("Email delivery failed. Check console.");
     }
 }
 
