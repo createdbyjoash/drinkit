@@ -651,15 +651,41 @@ async function sendEmailReceipt(cart, total, orderId) {
     }
 
     const email = state.user.email;
+    const userName = state.user.user_metadata?.full_name || "Coffee Lover";
     const displayId = `DK-${(orderId * 739).toString(36).toUpperCase()}`;
+    const itemsList = cart.map(item => `- ${item.name} (${item.size}): $${item.price.toFixed(2)}`).join('\n');
 
-    // Simulation of an API call to a service like Resend or EmailJS
-    console.log(`[EMAIL SEND] To: ${email}, Order: ${displayId}, Total: $${total}`);
+    // 1. Prepare Template Parameters (Mapping to EmailJS placeholders)
+    const templateParams = {
+        to_name: userName,
+        to_email: email,
+        order_id: displayId,
+        total_price: `$${total.toFixed(2)}`,
+        items_summary: itemsList,
+        date: new Date().toLocaleDateString()
+    };
 
-    // We use a slight delay to simulate network latency
-    setTimeout(() => {
-        showToast(`Receipt sent to ${email}`);
-    }, 1500);
+    console.log("[EMAIL PREP] Sending with params:", templateParams);
+
+    // 2. Integration with EmailJS
+    // To make this work, replace the strings below with your real IDs from the EmailJS Dashboard
+    const SERVICE_ID = "YOUR_SERVICE_ID";
+    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+    const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
+    if (SERVICE_ID !== "YOUR_SERVICE_ID") {
+        emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+            .then(() => {
+                showToast(`Receipt sent to ${email}`);
+            }, (error) => {
+                console.error("EmailJS Error:", error);
+            });
+    } else {
+        // Fallback simulation for demo
+        setTimeout(() => {
+            showToast(`Receipt sent (Demo Mode) to ${email}`);
+        }, 1500);
+    }
 }
 
 // Initial Screen override for dev
