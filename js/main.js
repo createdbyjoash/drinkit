@@ -404,9 +404,11 @@ async function processCheckout() {
         }
     }
 
+    const newOrderId = Math.floor(Math.random() * 1000) + 200;
+
     // Update local state orders for history
     state.orders.unshift({
-        id: Math.floor(Math.random() * 1000) + 200,
+        id: newOrderId,
         created_at: new Date().toISOString(),
         total_price: total,
         status: 'Preparing',
@@ -414,7 +416,7 @@ async function processCheckout() {
     });
 
     // Prepare Receipt before navigating
-    renderSuccessReceipt(checkoutCart, total);
+    renderSuccessReceipt(checkoutCart, total, newOrderId);
 
     // Increase Loyalty Points
     state.loyaltyPoints += 5;
@@ -425,7 +427,7 @@ async function processCheckout() {
     navigateTo('success');
 }
 
-function renderSuccessReceipt(cart, total) {
+function renderSuccessReceipt(cart, total, orderId) {
     const container = document.getElementById('order-receipt');
     if (!container) return;
 
@@ -437,10 +439,13 @@ function renderSuccessReceipt(cart, total) {
         minute: '2-digit'
     });
 
+    const displayId = `DK-${(orderId * 739).toString(36).toUpperCase()}`;
+
     container.innerHTML = `
         <div class="receipt-header">
             <h4 class="font-black text-primary-900 text-lg uppercase tracking-tight">Drinkit! Coffee</h4>
             <p class="text-[10px] text-primary-400 font-bold mt-1">${dateStr}</p>
+            <p class="text-[9px] font-black text-accent uppercase tracking-[0.2em] mt-2">Order ID: ${displayId}</p>
         </div>
         <div class="receipt-body">
             ${cart.map(item => `
@@ -509,7 +514,7 @@ async function loadOrderHistory() {
                 <div class="bg-white p-6 rounded-[32px] shadow-sm border border-primary-50">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-[10px] font-black uppercase text-primary-900 tracking-widest">Order #${order.id}</p>
+                            <p class="text-[10px] font-black uppercase text-accent tracking-widest">Successful Order</p>
                             <h4 class="font-black text-primary-900">${firstItemName}</h4>
                             <p class="text-xs text-primary-900">${dateStr}</p>
                         </div>
@@ -518,7 +523,7 @@ async function loadOrderHistory() {
                         </span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t border-primary-50">
-                        <p class="text-primary-900 text-xs font-bold">${items.length} items</p>
+                        <p class="text-primary-900 text-[10px] font-black uppercase tracking-widest opacity-50">ID: DK-${(order.id * 739).toString(36).toUpperCase()}</p>
                         <p class="text-primary-900 font-black">$${order.total_price}</p>
                     </div>
                 </div>
