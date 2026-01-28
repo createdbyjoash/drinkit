@@ -26,7 +26,11 @@ let state = {
     selectedSize: { name: 'Small', price: 10 },
     currentScreen: 'splash',
     loyaltyPoints: 0,
-    walletBalance: 100.00
+    walletBalance: 100.00,
+    orders: [
+        { id: 101, created_at: new Date().toISOString(), total_price: 25, status: 'Delivered', order_items: [{ product_name: 'Midnight Espresso', size: 'Large' }] },
+        { id: 102, created_at: new Date().toISOString(), total_price: 10, status: 'Preparing', order_items: [{ product_name: 'Oat Milk Latte', size: 'Small' }] }
+    ]
 };
 
 // --- Initial Demo Data (Fallback) ---
@@ -384,6 +388,15 @@ async function processCheckout() {
         }
     }
 
+    // Update local state orders for history
+    state.orders.unshift({
+        id: Math.floor(Math.random() * 1000) + 200,
+        created_at: new Date().toISOString(),
+        total_price: total,
+        status: 'Preparing',
+        order_items: checkoutCart.map(item => ({ product_name: item.name, size: item.size }))
+    });
+
     // Prepare Receipt before navigating
     renderSuccessReceipt(checkoutCart, total);
 
@@ -464,11 +477,8 @@ async function loadOrderHistory() {
     }
 
     if (!sb) {
-        // Mock history if fetch fails or no user or no orders
-        orders = [
-            { id: 101, created_at: new Date().toISOString(), total_price: 25, status: 'Delivered', order_items: [{ product_name: 'Midnight Espresso', size: 'Large' }] },
-            { id: 102, created_at: new Date().toISOString(), total_price: 10, status: 'Preparing', order_items: [{ product_name: 'Oat Milk Latte', size: 'Small' }] }
-        ];
+        // Use local state orders for Demo mode
+        orders = state.orders;
     }
 
     if (orders.length === 0) {
