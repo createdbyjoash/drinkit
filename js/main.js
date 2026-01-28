@@ -591,7 +591,7 @@ function fundWallet() {
 function showToast(message) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
-    toast.className = 'bg-primary-600 text-white px-6 py-4 rounded-2xl shadow-2xl mb-4 mx-4 flex items-center gap-3 toast-enter pointer-events-auto';
+    toast.className = 'bg-accent text-white px-6 py-4 rounded-2xl shadow-2xl mb-4 mx-4 flex items-center gap-3 toast-enter pointer-events-auto';
     toast.innerHTML = `
         <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
         <span class="text-sm font-bold">${message}</span>

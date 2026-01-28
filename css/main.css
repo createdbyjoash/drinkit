@@ -3,6 +3,7 @@
 :root {
     --primary: #120F0D;
     --accent: #C6A664;
+    --accent-dark: #A38952;
     --surface: #FFFFFF;
     --background: #F8F7F4;
     --text-main: #120F0D;
@@ -164,6 +165,17 @@ body {
     font-weight: 800;
     font-size: 1.25rem;
     color: var(--primary);
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    background-color: var(--accent-dark);
 }
 
 /* Toast animations */
